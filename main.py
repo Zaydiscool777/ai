@@ -31,6 +31,8 @@ class Neuron(Returner):
 		x += self.b
 		self.r = aid(x)
 		return self.r
+	def train(self, expected):
+		pass
 
 print('evaluating tests...')
 
