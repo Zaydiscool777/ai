@@ -32,7 +32,9 @@ class Neuron(Returner):
 		self.r = aid(x)
 		return self.r
 	def train(self, expected):
-		pass
+		self.b += lerp(self.b, expected - comp()) # b1 = b + (o1 - o)
+		for i in self.w:
+			pass
 
 print('evaluating tests...')
 
@@ -42,3 +44,5 @@ ai.append(Neuron(ai[0]))
 ai[1].w = [1/3] * 3
 
 print('test 1: use pre-made perceptron: expected: 2.0; actual: ' + str(ai[1].comp()))
+
+
