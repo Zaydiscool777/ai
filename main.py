@@ -34,7 +34,7 @@ class Neuron(Returner):
 	def train(self, expected):
 		self.b += lerp(self.b, expected - comp()) # b1 = b + (o1 - o)
 		for i in self.w:
-			pass
+			
 
 print('evaluating tests...')
 
