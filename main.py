@@ -32,8 +32,15 @@ class Neuron(Returner):
 		self.r = aid(x)
 		return self.r
 	def train(self, expected):
-		self.b += lerp(self.b, expected - comp()) # b1 = b + (o1 - o)
+		self.b += lerp(self.b, expected - self.comp()) # b1 = b + (o1 - o)
 		for i in self.w:
+			pass
+class Layer:
+    def __init__(self, ns: [Neuron], con: "Layer"): # type: ignore
+        self.ns = ns
+        self.con = con
+        for i in self.con:
+            
 			
 
 print('evaluating tests...')
