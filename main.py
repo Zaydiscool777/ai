@@ -1,4 +1,4 @@
-#/usr/bin/env python3
+#/usr/bin/env/python3
 
 # from math import *
 import random as rng
