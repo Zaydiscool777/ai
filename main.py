@@ -1,4 +1,4 @@
-#/usr/bin/env/python3
+#!/bin/python3
 
 # from math import *
 import random as rng
@@ -63,7 +63,7 @@ ai.append([Returner(1), Returner(2), Returner(3)])
 ai.append(Neuron(ai[0]))
 ai[1].w = [1 / 3] * 3
 
-print('test 1: use pre-made perceptron: expected: 2.0; actual: ' + str(ai[1].comp()))
+print('test 1: use pre-made perceptron: expected: 2.0; actual: ' + str(ai[1].comp()(1)))
 print("note: added randomization. not 2 anymore...")
 
 ai = []
