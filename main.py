@@ -3,18 +3,28 @@
 # from math import *
 import random as rng
 import numpy as np
+import time
 
-#print('beginning software...')
+print('beginning software...')
 
-#print('extracting data...')
-
-with open('3000.txt') as f: # while i do remember open(), the replit autocomplete showed to use the with clause, which might be favored in this situation? it might make proccessing faster to use open() and close() and read each line seperately...
-	data = [[i[0], i[1], i[2], i[3], i[4:]] for i in f.readlines()]
-
-#print('defining global functions...')
+print('defining global functions...')
 
 def snd(x):
-	return (np.exp(-(x**2)/2)/np.sqrt(2*np.pi)) # standard normal distribution wip
+	return (lambda y: -y if x < 0 else y)((np.exp(-(x**2)/2)/np.sqrt(2*np.pi))*5) # standard normal distribution, tweaked wip
+
+def datainit(x): # x is a string that contains only [a-z] atleast once
+	return [\
+		x[0],
+		(lambda x: x[1] if len(x) > 2 else '')(x),
+		(lambda x: x[2] if len(x) > 3 else '')(x),
+		(lambda x: x[3] if len(x) > 4 else '')(x),
+		(lambda x: x[4:] if len(x) > 5 else '')(x)
+	]
+
+print('extracting data...')
+
+with open('3000.txt') as f: # while i do remember open(), the replit autocomplete showed to use the with clause, which might be favored in this situation? it might make proccessing faster to use open() and close() and read each line seperately...
+	data = [datainit(i) for i in f.readlines()]
 
 print('getting classy...')
 
@@ -60,6 +70,7 @@ class Layer(RLayer): # neurons have to be added in ns to create
 		super().__init__(ns)
 		self.con = con
 		for i in self.rs:
+			time.sleep(100)
 			i.link(self.con.rs)
 
 class PLayer(Layer): 
@@ -82,40 +93,48 @@ class Thingy: # Neural Network
 		for i in self.layers[1:]:
 			i.comp()
 	def __iter__(self):
+		self.comp()
 		return self.layers[-1]
 
-class PThingy:
+class PThingy(Thingy):
 	def __init__(self, len): # len is a list of lens for each layer. misnomer!!!11!1
-		super().__init__([PLayer(slen, self)] for slen in len)
+		super().__init__(\
+			[RLayer([Returner()] * len[0])] + \
+			[[PLayer(slen, self)] for slen in len[1:]]) 
+		# replit is acting weird. it says super() takes 0 args??? edit: it does if you don't list the parent.
+		self.linkage()
 
 #class Community:
 #	pass
 
 print('evaluating tests...')
 
-ai = []
-ai.append([Returner(1), Returner(2), Returner(3)])
-ai.append(Neuron(ai[0]))
-ai[1].w = [1 / 3] * 3 # [], not (). it's not 1
+def _test1():
+	ai = []
+	ai.append([Returner(1), Returner(2), Returner(3)])
+	ai.append(Neuron(ai[0]))
+	ai[1].w = [1 / 3] * 3 # [], not (). it's not 1
+	print('test 1: use pre-made perceptron: expected: 2.0; actual: ' + 			str(ai[1].comp()))
+	print("note: added randomization. not 2 anymore...")
+#_test1()
 
-print('test 1: use pre-made perceptron: expected: 2.0; actual: ' + str(ai[1].comp()))
-print("note: added randomization. not 2 anymore...")
-
-print('test 2: use multiple perceptron layers with input given')
-
-ai = []
-ai.append(RLayer([Returner(\
-	int(input())\
-), Returner(\
-	int(input())\
-), Returner(\
-	int(input())\
-)])) # i no want () re
-ai.append(PLayer(3, ai[0]))
-ai.append(Neuron(ai[1].rs))
-ai[2].comp()
-print('result: ' + str(ai[2].r)) # replit ai is good; i didn't even see this beforehand yet
+def _test2():
+	print('test 2: use multiple perceptron layers with input given')
+	ai = []
+	ai.append(RLayer([Returner(\
+		int(input())\
+	), Returner(\
+		int(input())\
+	), Returner(\
+		int(input())\
+	)])) # i no want () re
+	ai.append(PLayer(3, ai[0]))
+	ai.append(Neuron(ai[1].rs))
+	ai[2].comp()
+	print('result: ' + str(ai[2].r)) # replit ai is good; i didn't even see this beforehand yet
 # NOTE: a layer returns a LIST of values, all of which have to be factored in for each Neuron of the next layer!
+#_test2()
+
 ai = []
 cai = PThingy([3,3,3]) # class-defined ai
 
