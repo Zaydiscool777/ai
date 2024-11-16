@@ -5,10 +5,13 @@ import random as rng
 import numpy as np
 
 #print('beginning software...')
-#print('defining global functions...')
+
+#print('extracting data...')
 
 with open('3000.txt') as f: # while i do remember open(), the replit autocomplete showed to use the with clause, which might be favored in this situation? it might make proccessing faster to use open() and close() and read each line seperately...
-	data = [i[0], i[1], i[2], i[3], i[3:]] for i in f.readlines()]
+	data = [[i[0], i[1], i[2], i[3], i[4:]] for i in f.readlines()]
+
+#print('defining global functions...')
 
 def snd(x):
 	return (np.exp(-(x**2)/2)/np.sqrt(2*np.pi)) # standard normal distribution wip
@@ -74,11 +77,11 @@ class Thingy: # Neural Network
 			i.link(self.layers[i-1])
 	def append(self, con):
 		self.layers.append(con)
-		layers[-1].link(layers[-2]) # i also forget about reverse indexing ._._. also from
+		self.layers[-1].link(self.layers[-2]) # i also forget about reverse indexing ._._. also from
 	def comp(self):
 		for i in self.layers[1:]:
 			i.comp()
-	def __iter__():
+	def __iter__(self):
 		return self.layers[-1]
 
 class PThingy:
@@ -114,6 +117,6 @@ ai[2].comp()
 print('result: ' + str(ai[2].r)) # replit ai is good; i didn't even see this beforehand yet
 # NOTE: a layer returns a LIST of values, all of which have to be factored in for each Neuron of the next layer!
 ai = []
-cai = PThingy(ai) # class-defined ai
+cai = PThingy([3,3,3]) # class-defined ai
 
 # TODO: add dosctrign' and moar comments
