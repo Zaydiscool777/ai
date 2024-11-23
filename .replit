@@ -7,9 +7,6 @@ channel = "stable-24_05"
 [deployment]
 run = ["sh", "-c", "echo"]
 
-[workflows]
-runButton = "Gin"
-
 [[workflows.workflow]]
 name = "Gin"
 mode = "sequential"

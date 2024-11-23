@@ -62,7 +62,6 @@ class Neuron(Returner):
 	def tweak(self):
 		self.w += snd(rng.random()*20-10)
 		self.b += snd(rng.random()*20-10)
-
 class RLayer:
 	def __init__(self, rs):  # rs -> list of Returner
 		self.rs = rs
