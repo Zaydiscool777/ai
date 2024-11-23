@@ -6,3 +6,15 @@ channel = "stable-24_05"
 
 [deployment]
 run = ["sh", "-c", "echo"]
+
+[workflows]
+runButton = "Gin"
+
+[[workflows.workflow]]
+name = "Gin"
+mode = "sequential"
+author = 19016378
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "git add . ; git commit ; git push"

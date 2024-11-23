@@ -3,14 +3,17 @@
 # from math import *
 import random as rng
 import numpy as np
-import time
 
 print('beginning software...')
 
 print('defining global functions...')
 
 def snd(x):
-	return (lambda y: -y if x < 0 else y)((np.exp(-(x**2)/2)/np.sqrt(2*np.pi))*5) # standard normal distribution, tweaked wip
+	return (lambda y: -y if x < 0 else y)\
+	((np.exp(-(x**2)/2)/np.sqrt(2*np.pi))*5) # standard normal distribution, tweaked wip
+
+def sig(x):
+	return np.reciprocal(1 + np.exp(-x))
 
 def datainit(x): # x is a string that contains only [a-z] atleast once
 	return [\
@@ -18,7 +21,7 @@ def datainit(x): # x is a string that contains only [a-z] atleast once
 		(lambda x: x[1] if len(x) > 2 else '')(x),
 		(lambda x: x[2] if len(x) > 3 else '')(x),
 		(lambda x: x[3] if len(x) > 4 else '')(x),
-		(lambda x: x[4:] if len(x) > 5 else '')(x)
+		(lambda x: x[4] if len(x) > 5 else '')(x)
 	]
 
 print('extracting data...')
@@ -54,10 +57,11 @@ class Neuron(Returner):
 		self.r = (lambda x: x)(x)
 		self.comps += 1
 		return self.a(self.r)
-	def train(self, expected):
-		pass  # evol route = true
 	def link(self, con):
 		self.__init__(self.cons + con)
+	def tweak(self):
+		self.w += snd(rng.random()*20-10)
+		self.b += snd(rng.random()*20-10)
 
 class RLayer:
 	def __init__(self, rs):  # rs -> list of Returner
@@ -70,39 +74,56 @@ class Layer(RLayer): # neurons have to be added in ns to create
 		super().__init__(ns)
 		self.con = con
 		for i in self.rs:
-			time.sleep(100)
 			i.link(self.con.rs)
-
-class PLayer(Layer): 
-	def __init__(self, len, con):
-		super().__init__(([Neuron()] * len), con)
+	def link(self):
+		for i in self.rs:
+			i.link(self.con.rs)
 	def comp(self):
 		for i in self.rs:
 			i.comp()
+	def tweak(self):
+		for i in self.rs:
+			i.tweak()
+
+class PLayer(Layer): # premade
+	def __init__(self, len, con):
+		super().__init__(([Neuron()] * len), con)
 
 class Thingy: # Neural Network
 	def __init__(self, layers):
 		self.layers = layers
-	def linkage(self):
-		for i in self.layers[1:]: # i often forget about slicing ._. this is from cgpt
-			i.link(self.layers[i-1])
+	#def linkage(self):
+		#for i in enumerate(self.layers[1:]): # i often forget about slicing ._. this is from cgpt
+			# i[1].link(self.layers[i[0]-1]) replit's ai says this is unnessecary, but i'm having second thoughts...
 	def append(self, con):
 		self.layers.append(con)
 		self.layers[-1].link(self.layers[-2]) # i also forget about reverse indexing ._._. also from
 	def comp(self):
 		for i in self.layers[1:]:
 			i.comp()
+	def input(self, inp):
+		self.layers[0] = RLayer(inp)
+	def tweak(self):
+		for i in self.layers[1:]:
+			i.tweak()
 	def __iter__(self):
 		self.comp()
-		return self.layers[-1]
+		return self.layers[-1].__iter__()
 
 class PThingy(Thingy):
-	def __init__(self, len): # len is a list of lens for each layer. misnomer!!!11!1
-		super().__init__(\
-			[RLayer([Returner()] * len[0])] + \
-			[[PLayer(slen, self)] for slen in len[1:]]) 
+	def __init__(self, lens): # len is a list of lens for each layer. misnomer!!!11!1
+		_in = [RLayer([Returner()] * lens[0])]
+		for i in lens[1:]:
+			_in += [PLayer(i, _in[-1])]
+		super().__init__(_in)
+#		super().__init__(\
+#			[RLayer([Returner()] * lens[0])] + \
+#			[[PLayer(slen, self)] for slen in lens[1:]]) 
 		# replit is acting weird. it says super() takes 0 args??? edit: it does if you don't list the parent.
-		self.linkage()
+		# self.linkage() see 97
+		self.comp()
+	def __iter__(self):
+		return list(super().__iter__())
 
 #class Community:
 #	pass
@@ -135,7 +156,20 @@ def _test2():
 # NOTE: a layer returns a LIST of values, all of which have to be factored in for each Neuron of the next layer!
 #_test2()
 
-ai = []
-cai = PThingy([3,3,3]) # class-defined ai
-
+cai = PThingy([3, 3, 3]) # c is for class-defined
+print("layers:")
+for i in cai.layers:
+	print(i)
+cai.input([1, 2, 3])
+cai.comp()
+print("123:", [i.r for i in cai.__iter__()])
+cai.tweak()
+cai.comp()
+print("123 tweaked:", [i.r for i in cai.__iter__()])
+cai.input([-8, 2, 4])
+print(cai.layers[0].rs)
+print("-824 before:", [i.r for i in cai.layers[1].rs])
+cai.comp()
+print("-824 after:", [i.r for i in cai.layers[1].rs])
+print([i.r for i in cai.__iter__()])
 # TODO: add dosctrign' and moar comments
