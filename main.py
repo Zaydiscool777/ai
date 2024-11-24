@@ -10,7 +10,7 @@ print('defining global functions...')
 
 def snd(x):
 	return (lambda y: -y if x < 0 else y)\
-	((np.exp(-(x**2)/2)/np.sqrt(2*np.pi))*5) # standard normal distribution, tweaked wip
+	((np.exp(-(x**2)/2)/np.sqrt(2*np.pi))*20) # standard normal distribution, tweaked wip
 
 def sig(x):
 	return np.reciprocal(1 + np.exp(-x))
@@ -44,24 +44,23 @@ class Neuron(Returner):
 		super().__init__()
 		self.cons = cons  # input
 		self.w = [rng.random] * len(cons)
-		self.w = list(map((lambda x: x() * 20 - 10), self.w))
-		self.b = rng.random() * 20 - 10
+		self.w = list(map((lambda x: x() * 10 - 5), self.w))
+		self.b = rng.random() * 10 - 5
 		self.w = list(map(snd, self.w))
 		self.a = (lambda x: x)
 		self.comps = 0 # times comped. may not be used
 	def comp(self):
 		x = 0
 		for i in enumerate(self.cons):
-			x += i[1]() * self.w[i[0]]
+			x += i[1].r * self.w[i[0]]
 		x += self.b
-		self.r = (lambda x: x)(x)
 		self.comps += 1
 		return self.a(self.r)
 	def link(self, con):
 		self.__init__(self.cons + con)
 	def tweak(self):
-		self.w += snd(rng.random()*20-10)
-		self.b += snd(rng.random()*20-10)
+		self.w += snd(rng.random()*10-5)
+		self.b += snd(rng.random()*10-5)
 class RLayer:
 	def __init__(self, rs):  # rs -> list of Returner
 		self.rs = rs
@@ -86,7 +85,10 @@ class Layer(RLayer): # neurons have to be added in ns to create
 
 class PLayer(Layer): # premade
 	def __init__(self, len, con):
-		super().__init__(([Neuron()] * len), con)
+		i = []
+		for _ in range(len):
+			i.append(Neuron())
+		super().__init__(i, con)
 
 class Thingy: # Neural Network
 	def __init__(self, layers):
