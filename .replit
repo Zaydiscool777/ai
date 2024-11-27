@@ -7,11 +7,21 @@ channel = "stable-24_05"
 [deployment]
 run = ["sh", "-c", "python3 ./main.py"]
 
+[workflows]
+
 [[workflows.workflow]]
 name = "Gin"
-mode = "sequential"
+mode = "parallel"
 author = 19016378
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "git add . ; git commit ; git push"
+args = "git add ."
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "git commit"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "git push"
