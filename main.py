@@ -51,8 +51,8 @@ class Neuron(Returner):
 		self.comps = 0 # times comped. may not be used
 	def comp(self):
 		x = 0
-		for i in enumerate(self.cons):
-			x += i[1].r * self.w[i[0]]
+		for i in range(self.cons):
+			x += self.cons[i].r * self.w[i]
 		x += self.b
 		self.comps += 1
 		return self.a(self.r)

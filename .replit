@@ -1,11 +1,11 @@
-modules = ["python-3.12"]
+modules = ["python-3.12", "python-base-3.13", "python-base-3.12"]
 run = "python3 ./main.py"
 
 [nix]
 channel = "stable-24_05"
 
 [deployment]
-run = ["sh", "-c", "echo"]
+run = ["sh", "-c", "python3 ./main.py"]
 
 [[workflows.workflow]]
 name = "Gin"
