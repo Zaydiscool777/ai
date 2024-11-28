@@ -11,7 +11,7 @@ run = ["sh", "-c", "python3 ./main.py"]
 
 [[workflows.workflow]]
 name = "Gin"
-mode = "parallel"
+mode = "sequential"
 author = 19016378
 
 [[workflows.workflow.tasks]]

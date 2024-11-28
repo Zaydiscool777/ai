@@ -2,7 +2,7 @@
 
 # from math import *
 import random as rng
-import numpy as np
+import math
 
 print('beginning software...')
 
@@ -10,10 +10,10 @@ print('defining global functions...')
 
 def snd(x):
 	return (lambda y: -y if x < 0 else y)\
-	((np.exp(-(x**2)/2)/np.sqrt(2*np.pi))*20) # standard normal distribution, tweaked wip
+	((math.exp(-(x**2)/2)/math.sqrt(2*math.pi))*20) # standard normal distribution, tweaked wip
 
 def sig(x):
-	return np.reciprocal(1 + np.exp(-x))
+	return 1 / (1 + math.exp(-x))
 
 def datainit(x): # x is a string that contains only [a-z] atleast once
 	return [\
@@ -51,7 +51,7 @@ class Neuron(Returner):
 		self.comps = 0 # times comped. may not be used
 	def comp(self):
 		x = 0
-		for i in range(self.cons):
+		for i in range(len(self.cons)):
 			x += self.cons[i].r * self.w[i]
 		x += self.b
 		self.comps += 1
@@ -59,7 +59,9 @@ class Neuron(Returner):
 	def link(self, con):
 		self.__init__(self.cons + con)
 	def tweak(self):
-		self.w += snd(rng.random()*10-5)
+		for i in self.w:
+			print(type(i))
+			i += snd(rng.random()*10-5)
 		self.b += snd(rng.random()*10-5)
 class RLayer:
 	def __init__(self, rs):  # rs -> list of Returner
