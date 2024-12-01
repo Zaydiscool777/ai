@@ -1,8 +1,9 @@
 #!/bin/python3
 
-# from math import *
 import random as rng
 import math
+from types import FunctionType, NoneType
+from typing import List
 
 print('beginning software...')
 
@@ -33,35 +34,34 @@ print('getting classy...')
 
 class Returner:  # to allow input (and output? no) of a neuron
 	def __init__(self, value=0):
-		self.r = value
+		self.r: int = value
 	def __call__(self):
 		return self.r
 	def __int__(self): # __int__ and subsequent __iter__s were from cgpt (specifically, how i would implement this form of class output where the object can be used as an iterator/integer in a smooth manner)
 		return self.r
 
 class Neuron(Returner):
-	def __init__(self, cons=[]):
+	def __init__(self, cons: List[Returner]=[]) -> NoneType:
 		super().__init__()
-		self.cons = cons  # input
-		self.w = [rng.random] * len(cons)
-		self.w = list(map((lambda x: x() * 10 - 5), self.w))
-		self.b = rng.random() * 10 - 5
-		self.w = list(map(snd, self.w))
+		self.cons: List[Returner] = cons  # input
+		self.w: List[float] = [snd(rng.random()*10-5) \
+			for _ in range(len(cons))]
+		self.b: float = rng.random() * 10 - 5
 		self.a = (lambda x: x)
-		self.comps = 0 # times comped. may not be used
-	def comp(self):
+		self.comps: int = 0 # times comped. may not be used
+	def comp(self) -> float:
 		x = 0
 		for i in range(len(self.cons)):
-			x += self.cons[i].r * self.w[i]
+			x += (self.cons[i].r * self.w[i])
 		x += self.b
 		self.comps += 1
+		# print(self.a(self.r)) # dbg
 		return self.a(self.r)
-	def link(self, con):
-		self.__init__(self.cons + con)
+	def link(self, con: Returner):
+		self.__init__(self.cons + [con])
 	def tweak(self):
 		for i in self.w:
-			print(type(i))
-			i += snd(rng.random()*10-5)
+			i = i + snd(rng.random()*10-5) # float(i.__str__())
 		self.b += snd(rng.random()*10-5)
 class RLayer:
 	def __init__(self, rs):  # rs -> list of Returner
@@ -80,6 +80,7 @@ class Layer(RLayer): # neurons have to be added in ns to create
 			i.link(self.con.rs)
 	def comp(self):
 		for i in self.rs:
+			# print(i) # dbg
 			i.comp()
 	def tweak(self):
 		for i in self.rs:
@@ -94,7 +95,7 @@ class PLayer(Layer): # premade
 
 class Thingy: # Neural Network
 	def __init__(self, layers):
-		self.layers = layers
+		self.layers: List[RLayer|Layer|PLayer] = layers
 	#def linkage(self):
 		#for i in enumerate(self.layers[1:]): # i often forget about slicing ._. this is from cgpt
 			# i[1].link(self.layers[i[0]-1]) replit's ai says this is unnessecary, but i'm having second thoughts...
@@ -103,9 +104,11 @@ class Thingy: # Neural Network
 		self.layers[-1].link(self.layers[-2]) # i also forget about reverse indexing ._._. also from
 	def comp(self):
 		for i in self.layers[1:]:
+			# print(i) # dbg
 			i.comp()
 	def input(self, inp):
-		self.layers[0] = RLayer(inp)
+		x = [Returner(i) for i in inp]
+		self.layers[0] = RLayer(x)
 	def tweak(self):
 		for i in self.layers[1:]:
 			i.tweak()
@@ -128,8 +131,25 @@ class PThingy(Thingy):
 	def __iter__(self):
 		return list(super().__iter__())
 
-#class Community:
-#	pass
+class Community:
+	def __init__(self, thingys: List[Thingy]):
+		self.thingys = thingys
+	def comp(self): # i would map, but then it's unreadable
+		for i in self.thingys:
+			i.comp()
+	def input(self, inp):
+		for i in self.thingys:
+			i.input(inp)
+	def tweak(self):
+		for i in self.thingys:
+			i.tweak()
+	def reduce(self):
+		x = [[i, i[-1]] for i in self.thingys]
+		x.sort(key=lambda x: x[1])
+		x[-5:-1] = x[0:5]
+		self.thingys = [x[0] for i in x]
+		
+	pass
 
 print('evaluating tests...')
 
