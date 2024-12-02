@@ -3,7 +3,7 @@
 import random as rng
 import math
 from types import FunctionType, NoneType
-from typing import List
+from typing import List, Self, Type
 
 print('beginning software...')
 
@@ -50,27 +50,28 @@ class Neuron(Returner):
 		self.a = (lambda x: x)
 		self.comps: int = 0 # times comped. may not be used
 	def comp(self) -> float:
-		x = 0
+		x: float = 0
 		for i in range(len(self.cons)):
+			print(type(self.cons[i]), self.cons[0][i])
 			x += (self.cons[i].r * self.w[i])
 		x += self.b
 		self.comps += 1
 		# print(self.a(self.r)) # dbg
 		return self.a(self.r)
-	def link(self, con: Returner):
+	def link(self, con: Returner) -> NoneType:
 		self.__init__(self.cons + [con])
 	def tweak(self):
 		for i in self.w:
 			i = i + snd(rng.random()*10-5) # float(i.__str__())
 		self.b += snd(rng.random()*10-5)
 class RLayer:
-	def __init__(self, rs):  # rs -> list of Returner
-		self.rs = rs
-	def __iter__(self):
+	def __init__(self, rs: list[Returner]):  # rs -> list of Returner
+		self.rs: list[Returner] = rs
+	def __iter__(self) -> list[Returner]:
 		return self.rs
 
 class Layer(RLayer): # neurons have to be added in ns to create
-	def __init__(self, ns, con):
+	def __init__(self, ns: List[Neuron], con: RLayer|Self):
 		super().__init__(ns)
 		self.con = con
 		for i in self.rs:
