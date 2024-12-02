@@ -1,9 +1,8 @@
 #!/bin/python3
 
+# from math import *
 import random as rng
 import math
-from types import FunctionType, NoneType
-from typing import List, Self, Type
 
 print('beginning software...')
 
@@ -11,12 +10,12 @@ print('defining global functions...')
 
 def snd(x):
 	return (lambda y: -y if x < 0 else y)\
-	((math.exp(-(x**2)/2)/math.sqrt(2*math.pi))*20) # standard normal distribution, tweaked wip
+	((math.exp(-(x**2)/2)/math.sqrt(2*math.pi))*20) # standard normal distribution tweaked
 
 def sig(x):
 	return 1 / (1 + math.exp(-x))
 
-def datainit(x): # x is a string that contains only [a-z] atleast once
+def to4(x): # x is a string that contains only [a-z] atleast once -> 
 	return [\
 		x[0],
 		(lambda x: x[1] if len(x) > 2 else '')(x),
@@ -27,51 +26,58 @@ def datainit(x): # x is a string that contains only [a-z] atleast once
 
 print('extracting data...')
 
-with open('3000.txt') as f: # while i do remember open(), the replit autocomplete showed to use the with clause, which might be favored in this situation? it might make proccessing faster to use open() and close() and read each line seperately...
-	data = [datainit(i) for i in f.readlines()]
+with open('/home/zaydm/bin/gits/ai/main.py') as f: # while i do remember open(), the replit autocomplete showed to use the with clause, which might be favored in this situation? it might make proccessing faster to use open() and close() and read each line seperately...
+	data = [to4(i) for i in f.readlines()]
+# TODO: Turn back to 3000.txt
+
+def gen_x(thing, times): # i typed gen_x(thing, times){ as if i was in c for some reason. lol
+	for _ in range(times): # gen_x? get it? generation X?
+		yield thing
+
+
 
 print('getting classy...')
 
 class Returner:  # to allow input (and output? no) of a neuron
 	def __init__(self, value=0):
-		self.r: int = value
+		self.r = value
 	def __call__(self):
 		return self.r
 	def __int__(self): # __int__ and subsequent __iter__s were from cgpt (specifically, how i would implement this form of class output where the object can be used as an iterator/integer in a smooth manner)
 		return self.r
 
 class Neuron(Returner):
-	def __init__(self, cons: List[Returner]=[]) -> NoneType:
+	def __init__(self, cons=[]):
 		super().__init__()
-		self.cons: List[Returner] = cons  # input
-		self.w: List[float] = [snd(rng.random()*10-5) \
-			for _ in range(len(cons))]
-		self.b: float = rng.random() * 10 - 5
+		self.cons = cons  # input
+		self.w = [rng.random] * len(cons)
+		self.w = list(map((lambda x: x() * 10 - 5), self.w))
+		self.b = rng.random() * 10 - 5
+		self.w = list(map(snd, self.w))
 		self.a = (lambda x: x)
-		self.comps: int = 0 # times comped. may not be used
-	def comp(self) -> float:
-		x: float = 0
+		self.comps = 0 # times comped. may not be used
+	def comp(self):
+		x = 0
 		for i in range(len(self.cons)):
-			print(type(self.cons[i]), self.cons[0][i])
-			x += (self.cons[i].r * self.w[i])
+			x += self.cons[i].r * self.w[i]
 		x += self.b
 		self.comps += 1
-		# print(self.a(self.r)) # dbg
 		return self.a(self.r)
-	def link(self, con: Returner) -> NoneType:
-		self.__init__(self.cons + [con])
+	def link(self, con):
+		self.__init__(self.cons + con)
 	def tweak(self):
 		for i in self.w:
-			i = i + snd(rng.random()*10-5) # float(i.__str__())
+			print(type(i))
+			i += snd(rng.random()*10-5)
 		self.b += snd(rng.random()*10-5)
 class RLayer:
-	def __init__(self, rs: list[Returner]):  # rs -> list of Returner
-		self.rs: list[Returner] = rs
-	def __iter__(self) -> list[Returner]:
+	def __init__(self, rs):  # rs -> list of Returner
+		self.rs = rs
+	def __iter__(self):
 		return self.rs
 
 class Layer(RLayer): # neurons have to be added in ns to create
-	def __init__(self, ns: List[Neuron], con: RLayer|Self):
+	def __init__(self, ns, con):
 		super().__init__(ns)
 		self.con = con
 		for i in self.rs:
@@ -81,7 +87,6 @@ class Layer(RLayer): # neurons have to be added in ns to create
 			i.link(self.con.rs)
 	def comp(self):
 		for i in self.rs:
-			# print(i) # dbg
 			i.comp()
 	def tweak(self):
 		for i in self.rs:
@@ -96,7 +101,7 @@ class PLayer(Layer): # premade
 
 class Thingy: # Neural Network
 	def __init__(self, layers):
-		self.layers: List[RLayer|Layer|PLayer] = layers
+		self.layers = layers
 	#def linkage(self):
 		#for i in enumerate(self.layers[1:]): # i often forget about slicing ._. this is from cgpt
 			# i[1].link(self.layers[i[0]-1]) replit's ai says this is unnessecary, but i'm having second thoughts...
@@ -105,11 +110,9 @@ class Thingy: # Neural Network
 		self.layers[-1].link(self.layers[-2]) # i also forget about reverse indexing ._._. also from
 	def comp(self):
 		for i in self.layers[1:]:
-			# print(i) # dbg
 			i.comp()
 	def input(self, inp):
-		x = [Returner(i) for i in inp]
-		self.layers[0] = RLayer(x)
+		self.layers[0] = RLayer(inp)
 	def tweak(self):
 		for i in self.layers[1:]:
 			i.tweak()
@@ -132,25 +135,8 @@ class PThingy(Thingy):
 	def __iter__(self):
 		return list(super().__iter__())
 
-class Community:
-	def __init__(self, thingys: List[Thingy]):
-		self.thingys = thingys
-	def comp(self): # i would map, but then it's unreadable
-		for i in self.thingys:
-			i.comp()
-	def input(self, inp):
-		for i in self.thingys:
-			i.input(inp)
-	def tweak(self):
-		for i in self.thingys:
-			i.tweak()
-	def reduce(self):
-		x = [[i, i[-1]] for i in self.thingys]
-		x.sort(key=lambda x: x[1])
-		x[-5:-1] = x[0:5]
-		self.thingys = [x[0] for i in x]
-		
-	pass
+#class Community:
+#	pass
 
 print('evaluating tests...')
 
@@ -161,7 +147,7 @@ def _test1():
 	ai[1].w = [1 / 3] * 3 # [], not (). it's not 1
 	print('test 1: use pre-made perceptron: expected: 2.0; actual: ' + 			str(ai[1].comp()))
 	print("note: added randomization. not 2 anymore...")
-#_test1()
+_test1()
 
 def _test2():
 	print('test 2: use multiple perceptron layers with input given')
@@ -180,20 +166,24 @@ def _test2():
 # NOTE: a layer returns a LIST of values, all of which have to be factored in for each Neuron of the next layer!
 #_test2()
 
-cai = PThingy([3, 3, 3]) # c is for class-defined
-print("layers:")
-for i in cai.layers:
-	print(i)
-cai.input([1, 2, 3])
-cai.comp()
-print("123:", [i.r for i in cai.__iter__()])
-cai.tweak()
-cai.comp()
-print("123 tweaked:", [i.r for i in cai.__iter__()])
-cai.input([-8, 2, 4])
-print(cai.layers[0].rs)
-print("-824 before:", [i.r for i in cai.layers[1].rs])
-cai.comp()
-print("-824 after:", [i.r for i in cai.layers[1].rs])
-print([i.r for i in cai.__iter__()])
+def _test3():
+	cai = PThingy([3, 3, 3]) # c is for class-defined
+	print("layers:")
+	for i in cai.layers:
+		print(i)
+	cai.input([1, 2, 3])
+	cai.comp()
+	print("123:", [i.r for i in cai.__iter__()])
+	cai.tweak()
+	cai.comp()
+	print("123 tweaked:", [i.r for i in cai.__iter__()])
+	cai.input([-8, 2, 4])
+	print(cai.layers[0].rs)
+	print("-824 before:", [i.r for i in cai.layers[1].rs])
+	cai.comp()
+	print("-824 after:", [i.r for i in cai.layers[1].rs])
+	print([i.r for i in cai.__iter__()])
+#_test3()
+
 # TODO: add dosctrign' and moar comments
+# nano or ed? actually, i'll just use vscode. it has the mighty power of... DEBUGGING!
