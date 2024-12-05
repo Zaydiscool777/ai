@@ -52,8 +52,8 @@ class Neuron(Returner):
 	def comp(self) -> float:
 		x: float = 0
 		for i in range(len(self.cons)):
-			print(type(self.cons[i]), self.cons[0][i])
-			x += (self.cons[i].r * self.w[i])
+			# print(type(self.cons[i]), self.cons[0][i]) dbg
+			x += (self.cons[0][i].r * self.w[i]) # [0] is tmp
 		x += self.b
 		self.comps += 1
 		# print(self.a(self.r)) # dbg
@@ -120,9 +120,10 @@ class Thingy: # Neural Network
 class PThingy(Thingy):
 	def __init__(self, lens): # len is a list of lens for each layer. misnomer!!!11!1
 		_in = [RLayer([Returner()] * lens[0])]
-		for i in lens[1:]:
-			_in += [PLayer(i, _in[-1])]
-		super().__init__(_in)
+		_in2 = []
+		for i in enumerate(lens[1:]):
+			_in2.append([PLayer(i[1], _in[-1])] * lens[i[0]+1])
+		super().__init__(_in + _in2)
 #		super().__init__(\
 #			[RLayer([Returner()] * lens[0])] + \
 #			[[PLayer(slen, self)] for slen in lens[1:]]) 
@@ -182,8 +183,8 @@ def _test2():
 
 cai = PThingy([3, 3, 3]) # c is for class-defined
 print("layers:")
-for i in cai.layers:
-	print(i)
+for i in enumerate(cai.layers):
+	print(*i)
 cai.input([1, 2, 3])
 cai.comp()
 print("123:", [i.r for i in cai.__iter__()])
