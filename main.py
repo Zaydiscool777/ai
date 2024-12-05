@@ -13,8 +13,12 @@ def snd(x):
 	return (lambda y: -y if x < 0 else y)\
 	((math.exp(-(x**2)/2)/math.sqrt(2*math.pi))*20) # standard normal distribution, tweaked wip
 
+# it kinda looks like a bell shape. used to change randomization
+
 def sig(x):
 	return 1 / (1 + math.exp(-x))
+
+# basic ai func
 
 def datainit(x): # x is a string that contains only [a-z] atleast once
 	return [\
@@ -24,6 +28,8 @@ def datainit(x): # x is a string that contains only [a-z] atleast once
 		(lambda x: x[3] if len(x) > 4 else '')(x),
 		(lambda x: x[4] if len(x) > 5 else '')(x)
 	]
+
+# used to create training/input data
 
 print('extracting data...')
 
@@ -94,7 +100,7 @@ class PLayer(Layer): # premade
 			i.append(Neuron())
 		super().__init__(i, con)
 
-class Thingy: # Neural Network
+class Thingy: # Neural Network [basically layer list]
 	def __init__(self, layers):
 		self.layers: List[RLayer|Layer|PLayer] = layers
 	#def linkage(self):
@@ -117,7 +123,7 @@ class Thingy: # Neural Network
 		self.comp()
 		return self.layers[-1].__iter__()
 
-class PThingy(Thingy):
+class PThingy(Thingy): #premade
 	def __init__(self, lens): # len is a list of lens for each layer. misnomer!!!11!1
 		_in = [RLayer([Returner()] * lens[0])]
 		_in2 = []
@@ -133,7 +139,7 @@ class PThingy(Thingy):
 	def __iter__(self):
 		return list(super().__iter__())
 
-class Community:
+class Community: #wip
 	def __init__(self, thingys: List[Thingy]):
 		self.thingys = thingys
 	def comp(self): # i would map, but then it's unreadable
