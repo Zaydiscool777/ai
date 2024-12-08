@@ -26,15 +26,15 @@ def to4(x): # x is a string that contains only [a-z] atleast once ->
 
 print('extracting data...')
 
-with open('/home/zaydm/bin/gits/ai/main.py') as f: # while i do remember open(), the replit autocomplete showed to use the with clause, which might be favored in this situation? it might make proccessing faster to use open() and close() and read each line seperately...
-	data = [to4(i) for i in f.readlines()]
+# with open('/home/zaydm/bin/gits/ai/main.py') as f: # while i do remember open(), the replit autocomplete showed to use the with clause, which might be favored in this situation? it might make proccessing faster to use open() and close() and read each line seperately...
+# 	data = [to4(i) for i in f.readlines()]
 # TODO: Turn back to 3000.txt
 
 def gen_x(thing, times): # i typed gen_x(thing, times){ as if i was in c for some reason. lol
 	for _ in range(times): # gen_x? get it? generation X?
 		yield thing
 
-
+#
 
 print('getting classy...')
 
@@ -145,7 +145,8 @@ def _test1():
 	ai.append([Returner(1), Returner(2), Returner(3)])
 	ai.append(Neuron(ai[0]))
 	ai[1].w = [1 / 3] * 3 # [], not (). it's not 1
-	print('test 1: use pre-made perceptron: expected: 2.0; actual: ' + 			str(ai[1].comp()))
+	x = str(ai[1].comp())
+	print('test 1: use pre-made perceptron: expected: 2.0; actual: ' + x)
 	print("note: added randomization. not 2 anymore...")
 _test1()
 
