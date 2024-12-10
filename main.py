@@ -135,9 +135,22 @@ class PThingy(Thingy):
 	def __iter__(self):
 		return list(super().__iter__())
 
-#class Community:
-#	pass
+def unlock(outs, letter):
+	want = list("abcdefghijklmnopqrstuvwxyz")
+	want.append('')
+	want2 = [1 if i == letter else 0 for i in want]
+	want3 = []
+	for i in range(len(outs)):
+		want3.append(-abs(outs[i] - want2[i]))
 
+class Community:
+	def __init__(self, len):
+		self.things = [PThingy((27*4), 15, 10, 15, 27)] * len
+	def update(self, inp):
+		for i in self.things:
+			i.input(inp)
+			i.comp()
+		self.things.sort() # TODO: make key
 print('evaluating tests...')
 
 def _test1():
