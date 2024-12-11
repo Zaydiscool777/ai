@@ -30,8 +30,9 @@ def consult(x):
 
 print('extracting data...')
 
-# with open('/home/zaydm/bin/gits/ai/main.py') as f: # while i do remember open(), the replit autocomplete showed to use the with clause, which might be favored in this situation? it might make proccessing faster to use open() and close() and read each line seperately...
-# 	data = [to4(i) for i in f.readlines()]
+with open('3000.txt') as f: # while i do remember open(), the replit autocomplete showed to use the with clause, which might be favored in this situation? it might make proccessing faster to use open() and close() and read each line seperately...
+	data = [to4(i) for i in f.readlines()]
+data[-1][-2] = 'e' # don't ask.
 # TODO: Turn back to 3000.txt
 
 def gen_x(thing, times): # i typed gen_x(thing, times){ as if i was in c for some reason. lol
@@ -208,3 +209,6 @@ def _test3():
 
 # TODO: add dosctrign' and moar comments
 # nano or ed? actually, i'll just use vscode. it has the mighty power of... DEBUGGING!
+
+def _finale():
+	
