@@ -116,6 +116,8 @@ class Thingy: # Neural Network
 	def comp(self):
 		for i in self.layers[1:]:
 			i.comp()
+		x = self.layers[-1]
+		return list(map(lambda x:x.comp(), x.rs))
 	def input(self, inp):
 		self.layers[0] = RLayer(inp)
 	def tweak(self):
@@ -146,18 +148,37 @@ def unlock(letter, outs=[0]*27): # outs is one-hot encoding! get it?
 	want.append('')
 	want2 = [1 if i == letter else 0 for i in want] # well actually, this is.
 	want3 = [] # outs is just a (0,1) list.
-	for i in range(len(outs)):
+	for i in range(len(outs)): # nvm, has 5 1s so yeah
 		want3.append(abs(outs[i] - want2[i]))
 	return want3
 
+def lock(letters, outs):
+	# thanks to geeksforgeeks, the exception
+	
+	l = outs
+	n = 27
+	print(len(l))
+	x = [l[i:i + n] for i in range(0, len(l), n)]
+
+	print()
+	x2 = [sum(unlock(letters[i], x[i])) for i in range(5)]
+	return x2
+
+def idk(letters):
+	
+	l = [[0]*27]*5
+	j=[]
+	for k in range(5):
+		j.append([1 if i == letters[i] else 0 for i in l[k]])
+	return j
+
 class Community:
 	def __init__(self, len):
-		self.things = [PThingy((27*4), 15, 10, 15, 27)] * len
+		self.things = [PThingy([(27*4), 15, 10, 15, 27])] * len
 	def update(self, inp):
 		for i in self.things:
-			i.input(unlock(inp))
-			i.comp()
-		self.things.sort(key=lambda x: -sum(unlock(inp, x.comp())))
+			i.input([idk(inp)])
+		self.things.sort(key=lambda x: -sum(lock(inp, x.comp())))
 		self.things[0:5] = self.things[-4:] # four
 		self.things = [i.tweak() for i in self.things[0:5]] + self.things[5:]
 
@@ -196,7 +217,7 @@ def _test3():
 	cai.input([1, 2, 3])
 	cai.comp()
 	print("123:", [i.r for i in cai.__iter__()])
-	cai.tweak()
+	cai.tweak() 
 	cai.comp()
 	print("123 tweaked:", [i.r for i in cai.__iter__()])
 	cai.input([-8, 2, 4])
@@ -211,4 +232,7 @@ def _test3():
 # nano or ed? actually, i'll just use vscode. it has the mighty power of... DEBUGGING!
 
 def _finale():
-	
+	x = Community(20)
+	x.update('aaaaa')
+	print(x[-1].comp())
+_finale()
