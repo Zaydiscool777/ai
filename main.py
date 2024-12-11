@@ -24,6 +24,10 @@ def to4(x): # x is a string that contains only [a-z] atleast once ->
 		(lambda x: x[4] if len(x) > 5 else '')(x)
 	]
 
+def consult(x):
+	print(x)
+	return x
+
 print('extracting data...')
 
 # with open('/home/zaydm/bin/gits/ai/main.py') as f: # while i do remember open(), the replit autocomplete showed to use the with clause, which might be favored in this situation? it might make proccessing faster to use open() and close() and read each line seperately...
@@ -62,12 +66,12 @@ class Neuron(Returner):
 			x += self.cons[i].r * self.w[i]
 		x += self.b
 		self.comps += 1
-		return self.a(self.r)
+		self.r = self.a(x)
+		return x # finally figured it out!
 	def link(self, con):
 		self.__init__(self.cons + con)
 	def tweak(self):
 		for i in self.w:
-			print(type(i))
 			i += snd(rng.random()*10-5)
 		self.b += snd(rng.random()*10-5)
 class RLayer:
@@ -116,6 +120,7 @@ class Thingy: # Neural Network
 	def tweak(self):
 		for i in self.layers[1:]:
 			i.tweak()
+		return self
 	def __iter__(self):
 		self.comp()
 		return self.layers[-1].__iter__()
@@ -135,22 +140,26 @@ class PThingy(Thingy):
 	def __iter__(self):
 		return list(super().__iter__())
 
-def unlock(outs, letter):
+def unlock(letter, outs=[0]*27): # outs is one-hot encoding! get it?
 	want = list("abcdefghijklmnopqrstuvwxyz")
 	want.append('')
-	want2 = [1 if i == letter else 0 for i in want]
-	want3 = []
+	want2 = [1 if i == letter else 0 for i in want] # well actually, this is.
+	want3 = [] # outs is just a (0,1) list.
 	for i in range(len(outs)):
-		want3.append(-abs(outs[i] - want2[i]))
+		want3.append(abs(outs[i] - want2[i]))
+	return want3
 
 class Community:
 	def __init__(self, len):
 		self.things = [PThingy((27*4), 15, 10, 15, 27)] * len
 	def update(self, inp):
 		for i in self.things:
-			i.input(inp)
+			i.input(unlock(inp))
 			i.comp()
-		self.things.sort() # TODO: make key
+		self.things.sort(key=lambda x: -sum(unlock(inp, x.comp())))
+		self.things[0:5] = self.things[-4:] # four
+		self.things = [i.tweak() for i in self.things[0:5]] + self.things[5:]
+
 print('evaluating tests...')
 
 def _test1():
@@ -161,7 +170,7 @@ def _test1():
 	x = str(ai[1].comp())
 	print('test 1: use pre-made perceptron: expected: 2.0; actual: ' + x)
 	print("note: added randomization. not 2 anymore...")
-_test1()
+#_test1()
 
 def _test2():
 	print('test 2: use multiple perceptron layers with input given')
@@ -183,8 +192,6 @@ def _test2():
 def _test3():
 	cai = PThingy([3, 3, 3]) # c is for class-defined
 	print("layers:")
-	for i in cai.layers:
-		print(i)
 	cai.input([1, 2, 3])
 	cai.comp()
 	print("123:", [i.r for i in cai.__iter__()])
