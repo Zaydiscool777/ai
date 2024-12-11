@@ -6,6 +6,9 @@ import math
 
 print('beginning software...')
 
+print('WARNING: download 3000.txt from https://github.com/Zaydiscool777/ai')
+print('i wish i had some time left, but atleast i coded something.')
+
 print('defining global functions...')
 
 def snd(x):
